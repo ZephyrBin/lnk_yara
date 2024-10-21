@@ -1,5 +1,5 @@
 __author__ = "JowonReady"
-__version__ = "1.00"
+__version__ = "1.10"
 __last_modification__ = "2024-10-21"
 
 

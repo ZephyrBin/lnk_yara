@@ -29,19 +29,23 @@ def detect_YARA_quick(files):
 def detect_YARA_full(files):
     rules = yara.compile(filepath=FULL_YARA_RULE_LOCATION)
     results = []
-    file_ID_dict= {}
 
     for file in files:
-        file_ID_dict[file]= extract_extrablock_ID(open_lnkfiles(file))
+        file_ID_values = extract_extrablock_ID(open_lnkfiles(file))
+        if (len(file_ID_values)>12):
+            result= f"file {file} exceeded extra data block limit. \n"
         try:
-            matches= rules.match(file_ID_dict[file])
-            if matches:
-                for match in matches:
-                    result = f"file {file} matches rule '{match.rule} with string:\n"
-                    for s in match.strings:
-                        result += f"   - {s}\n"
-                    results.append(result)
-        except yara.Error as e:  
+            for file_ID_value in file_ID_values:
+                matches = rules.match(file_ID_value)
+                if matches:
+                    for match in matches:
+                        result = f"file {file} has undefined extra data block:\n"
+                        for s in match.strings:
+                            result += f"   - {s}\n"
+                        results.append(result)
+                    break
+        except yara.Error as e:
             error_message = f"Error occurred while processing file {file}: {str(e)}"
             results.append(error_message)
+    
     write_results(results, "full")
