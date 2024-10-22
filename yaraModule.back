@@ -1,0 +1,53 @@
+import yara
+from constant import QUICK_YARA_RULE_LOCATION, FULL_YARA_RULE_LOCATION, TMP_DIR
+from windowsIO import write_results, open_lnkfiles, copy_tmp
+from lnkStructure import extract_extrablock_ID
+import shutil
+
+
+def detect_YARA_quick(files):
+    rules = yara.compile(filepath=QUICK_YARA_RULE_LOCATION)
+    results = []
+    detected_files = []
+    copied_files= copy_tmp(files)
+    matching_dict= {}
+    for i in range(0, len(copied_files)-1):
+        try:
+            matches= rules.match(copied_files[i])
+            if matches:
+                for match in matches:
+                    result= f"file {files[i]} matches rule '{match.rule}' with string:\n"
+                    for s in match.strings:
+                        result+= f"   - {s}\n"
+                    results.append(result)
+                    detected_files.append(files[i])
+        except yara.Error as e:  
+            error_message = f"Error occurred while processing file {files[i]}: {str(e)}"
+            results.append(error_message)
+    shutil.rmtree(TMP_DIR)
+    write_results(results, "quick")
+    return detected_files
+
+def detect_YARA_full(files):
+    rules = yara.compile(filepath=FULL_YARA_RULE_LOCATION)
+    results = []
+
+    for file in files:
+        file_ID_values = extract_extrablock_ID(open_lnkfiles(file))
+        if (len(file_ID_values)>12):
+            result= f"file {file} exceeded extra data block limit. \n"
+        try:
+            for file_ID_value in file_ID_values:
+                matches= rules.match(file_ID_value)
+                if matches:
+                    for match in matches:
+                        result= f"file {file} has undefined extra data block:\n"
+                        for s in match.strings:
+                            result+= f"   - {s}\n"
+                        results.append(result)
+                    break
+        except yara.Error as e:
+            error_message= f"Error occurred while processing file {file}: {str(e)}"
+            results.append(error_message)
+    
+    write_results(results, "full")
