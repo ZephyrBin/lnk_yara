@@ -1,6 +1,6 @@
 __author__ = "JowonReady"
-__version__ = "1.10"
-__last_modification__ = "2024-10-21"
+__version__ = "1.70"
+__last_modification__ = "2024-10-25"
 
 
 import datetime
@@ -10,7 +10,7 @@ import argparse
 
 from constant import DEFAULT_LOCATION
 from windowsIO import find_lnkfiles
-from yaraModule import detect_YARA_quick, detect_YARA_full
+from yaraModule import detect_YARA_quick, detect_YARA_precise
 
 
 def main():
@@ -31,7 +31,7 @@ def main():
     parser.add_argument("target", metavar="target_location", nargs='?', default=DEFAULT_LOCATION, type=str,
                         help="Type Target Location. Default will be your home directory.")
     parser.add_argument("-q", "--quick", action="store_true", help="Quick Scan")
-    parser.add_argument("-f", "--full", action="store_true", help="Full Scan")
+    parser.add_argument("-p", "--precise", action="store_true", help="Precise Scan")
     args = parser.parse_args()
     
     # Find LNK Files Recursively
@@ -41,12 +41,12 @@ def main():
     if args.quick:
         detect_YARA_quick(lnk_files)
 
-    if args.full:
-        detect_YARA_full(detect_YARA_quick(lnk_files))
+    if args.precise:
+        detect_YARA_precise(detect_YARA_quick(lnk_files))
 
     end_time = datetime.datetime.now()
     duration = end_time - start_time
-    print(f"Duration:\t{duration}")
+    print(f"Estimated time:\t{duration}")
 
 
 if __name__ == "__main__":

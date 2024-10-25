@@ -1,10 +1,12 @@
-rule QuickDetectionPowershell
+rule SUSP_LNK_Flags
 {
-	strings:
-		$a1 = "powershell" nocase
-		$a2 = "powershell" ascii wide nocase
-		$a3 = {70 00 6F 00 77 00 65 00 72 00 73 00 68 00 65 00 6C 00 6C 00}
-		$a4 = {70 6F 77 65 72 73 68 65 6C 6C}
+	meta:
+		author = "JowonReady"
+		date = "2024/10/24"
+		threat_level = 1
+	
 	condition:
-		any of ($a*)
+		uint32(0) == 0x4C and
+		(uint32(0x14) & 0x20) == 0x20 and
+		(uint32(0x3C) & 0x07) == 0x07
 }

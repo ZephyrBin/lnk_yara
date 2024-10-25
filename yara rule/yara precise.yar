@@ -1,5 +1,9 @@
-rule FullDetection
+rule MAL_APT_LNK_Dropper
 {
+	meta:
+		author = "JowonReady"
+		date = "2024/10/24"
+		threat_level = 3
     strings:
         $hex1 = { 02 00 00 A0 }
         $hex2 = { 04 00 00 A0 }

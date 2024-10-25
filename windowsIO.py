@@ -21,7 +21,7 @@ def open_lnkfiles(files_list):
 
 def write_results(results, scan_type):
     current_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"{scan_type}_results_{current_time}.txt" if results else f"no_results_{current_time}.txt"
+    filename = f"{scan_type}_results_{current_time}.txt"
 
     with open(filename, "w") as f:
         if results:

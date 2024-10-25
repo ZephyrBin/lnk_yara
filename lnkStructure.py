@@ -12,7 +12,7 @@ def extract_extrablock_ID(lnk_hex_string):
     
     if flags[0] == "1":
         list_size = hextoint(calc_little_endian_byte(lnk_hex_string[current_position:current_position+4]))
-        current_position += 4 * 2 
+        current_position += 2 * 2 
         current_position += list_size * 2
     
     if flags[1] == "1":
@@ -21,12 +21,11 @@ def extract_extrablock_ID(lnk_hex_string):
     
     for i in range(2, 7):
         if flags[i] == "1":
-            count = hextoint(calc_little_endian_byte(lnk_hex_string[current_position:current_position+2]))
+            count = hextoint(calc_little_endian_byte(lnk_hex_string[current_position:current_position+4]))
             current_position += 2 * 2
-            
             current_position += count * 2 * 2
     
-    while current_position < len(lnk_hex_string) - 16:
+    while current_position < len(lnk_hex_string) - 32:
         block_size = hextoint(calc_little_endian_byte(lnk_hex_string[current_position:current_position+8]))
         
         if block_size == 0:
